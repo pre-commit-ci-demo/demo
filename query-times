@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import datetime
+import json
+import pprint
+import re
+import urllib.request
+from typing import Any
+from typing import Dict
+from typing import NamedTuple
+
+PATTERN = re.compile(r'^https://github\.com/([^/]+/[^/]+)/pull/(\d+)$')
+
+
+def _parse_dt(s: str) -> datetime.datetime:
+    assert s.endswith('Z'), s
+    return datetime.datetime.fromisoformat(f'{s[:-1]}+00:00')
+
+
+def _req(url: str) -> Any:
+    return json.load(urllib.request.urlopen(url))
+
+
+class Status(NamedTuple):
+    created_at: datetime.datetime
+    context: str
+    description: str
+    state: str
+
+    @classmethod
+    def make(cls, dct: Dict[str, Any]) -> Status:
+        return cls(
+            created_at=_parse_dt(dct['created_at']),
+            context=dct['context'],
+            description=dct['description'],
+            state=dct['state'],
+        )
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('pr_url')
+    args = parser.parse_args()
+
+    match = PATTERN.match(args.pr_url)
+    if not match:
+        parser.error(f'expected pr_url to match {PATTERN.pattern}')
+
+    repo = match[1]
+    pr = int(match[2])
+
+    pr_data = _req(f'https://api.github.com/repos/{repo}/pulls/{pr}')
+    statuses = _req(pr_data['statuses_url'])
+
+    start_time = _parse_dt(pr_data['created_at'])
+    all_statuses = [Status.make(dct) for dct in statuses]
+    print(repr(start_time))
+    pprint.pprint(all_statuses)
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())
