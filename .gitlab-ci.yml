@@ -1,0 +1,13 @@
+image: python:3.8-slim
+pre-commit:
+  only: [master]
+  variables:
+    PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
+    PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
+  cache:
+    paths:
+    - ${PIP_CACHE_DIR}
+    - ${PRE_COMMIT_HOME}
+  script:
+  - pip install pre-commit
+  - pre-commit run --all-files
