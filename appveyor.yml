@@ -1,0 +1,10 @@
+build: false
+branches:
+  only: [master]
+cache:
+- '%LOCALAPPDATA%\pip\cache'
+- '%USERPROFILE%\.cache\pre-commit'
+install:
+- SET PATH=C:\Python38;C:\Python38\Scripts;%PATH%
+- pip install pre-commit
+test_script: pre-commit run --all-files
