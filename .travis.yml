@@ -1,0 +1,10 @@
+language: python
+python: 3.8
+branches:
+  only: [master]
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.cache/pre-commit
+install: pip install pre-commit
+script: pre-commit run --all-files
