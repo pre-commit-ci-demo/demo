@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import datetime
 import json
 import pprint
@@ -51,12 +52,29 @@ class Check(NamedTuple):
     def make(cls, dct: Dict[str, Any]) -> Check:
         return cls(
             started_at=_parse_dt(dct['started_at']),
-            completed_at=_parse_dt(dct['started_at']),
+            completed_at=_parse_dt(dct['completed_at']),
             name=dct['name'],
             app=dct['app']['slug'],
             status=dct['status'],
             conclusion=dct['conclusion'],
         )
+
+
+class Run(NamedTuple):
+    service: str
+    seconds_to_start: int
+    seconds_to_end: int
+
+
+SERVICES = {
+    'Travis CI - Pull Request': 'travis-ci',
+    'ci/gitlab/gitlab.com': 'gitlab',
+    'ci/circleci: build': 'circle ci',
+    'continuous-integration/appveyor/pr': 'appveyor',
+    'pre-commit': 'github actions',
+    'pre-commit-ci-demo.demo': 'azure pipelines',
+    'pre-commit.ci - pr': 'pre-commit.ci',
+}
 
 
 def main() -> int:
@@ -74,15 +92,39 @@ def main() -> int:
     base = 'https://api.github.com'
     pr_data = _req(f'{base}/repos/{repo}/pulls/{pr}')
     sha = pr_data['head']['sha']
-    statuses = _req(f'{base}/repos/{repo}/statuses/{sha}')
-    checks = _req(f'{base}/repos/{repo}/commits/{sha}/check-runs')
+    statuses_data = _req(f'{base}/repos/{repo}/statuses/{sha}')
+    checks_data = _req(f'{base}/repos/{repo}/commits/{sha}/check-runs')
 
     start_time = _parse_dt(pr_data['created_at'])
-    all_statuses = [Status.make(dct) for dct in statuses]
-    checks = [Check.make(dct) for dct in checks['check_runs']]
-    print(repr(start_time))
-    pprint.pprint(all_statuses)
-    pprint.pprint(checks)
+    statuses_by_context = collections.defaultdict(list)
+    for dct in statuses_data:
+        status = Status.make(dct)
+        statuses_by_context[status.context].append(status)
+    checks = [Check.make(dct) for dct in checks_data['check_runs']]
+
+    runs = []
+    for k, statuses in statuses_by_context.items():
+        status_started = min(status.created_at for status in statuses)
+        status_ended = max(status.created_at for status in statuses)
+        run = Run(
+            service=SERVICES[k],
+            seconds_to_start=(status_started - start_time).seconds,
+            seconds_to_end=(status_ended - start_time).seconds,
+        )
+        runs.append(run)
+
+    for check in checks:
+        run = Run(
+            service=SERVICES[check.name],
+            seconds_to_start=(check.started_at - start_time).seconds,
+            seconds_to_end=(check.completed_at - start_time).seconds,
+        )
+        runs.append(run)
+
+    runs.sort(key=lambda run: run.seconds_to_end)
+
+    pprint.pprint(runs)
+
     return 0
 
 
