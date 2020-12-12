@@ -1,0 +1,21 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: python:3.8-buster
+    steps:
+      - checkout
+      - run:
+          command: |
+            cp .pre-commit-config.yaml pre-commit-cache-key.txt
+            python --version --version >> pre-commit-cache-key.txt
+      - restore_cache:
+          keys:
+          - v1-pc-cache-{{ checksum "pre-commit-cache-key.txt" }}
+      - run:
+          command: pip install pre-commit
+      - run:
+          command: pre-commit run --all-files
+      - save_cache:
+          key: v1-pc-cache-{{ checksum "pre-commit-cache-key.txt" }}
+          paths: [~/.cache/pre-commit]
