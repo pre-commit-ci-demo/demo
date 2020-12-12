@@ -39,6 +39,26 @@ class Status(NamedTuple):
         )
 
 
+class Check(NamedTuple):
+    started_at: datetime.datetime
+    completed_at: datetime.datetime
+    name: str
+    app: str
+    status: str
+    conclusion: str
+
+    @classmethod
+    def make(cls, dct: Dict[str, Any]) -> Check:
+        return cls(
+            started_at=_parse_dt(dct['started_at']),
+            completed_at=_parse_dt(dct['started_at']),
+            name=dct['name'],
+            app=dct['app']['slug'],
+            status=dct['status'],
+            conclusion=dct['conclusion'],
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('pr_url')
@@ -51,13 +71,18 @@ def main() -> int:
     repo = match[1]
     pr = int(match[2])
 
-    pr_data = _req(f'https://api.github.com/repos/{repo}/pulls/{pr}')
-    statuses = _req(pr_data['statuses_url'])
+    base = 'https://api.github.com'
+    pr_data = _req(f'{base}/repos/{repo}/pulls/{pr}')
+    sha = pr_data['head']['sha']
+    statuses = _req(f'{base}/repos/{repo}/statuses/{sha}')
+    checks = _req(f'{base}/repos/{repo}/commits/{sha}/check-runs')
 
     start_time = _parse_dt(pr_data['created_at'])
     all_statuses = [Status.make(dct) for dct in statuses]
+    checks = [Check.make(dct) for dct in checks['check_runs']]
     print(repr(start_time))
     pprint.pprint(all_statuses)
+    pprint.pprint(checks)
     return 0
 
 
