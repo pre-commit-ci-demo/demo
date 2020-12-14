@@ -20,8 +20,9 @@ def _parse_dt(s: str) -> datetime.datetime:
     return datetime.datetime.fromisoformat(f'{s[:-1]}+00:00')
 
 
-def _req(url: str) -> Any:
-    return json.load(urllib.request.urlopen(url))
+def _req(url: str, **kwargs: Any) -> Any:
+    req = urllib.request.Request(url, **kwargs)
+    return json.load(urllib.request.urlopen(req))
 
 
 class Status(NamedTuple):
@@ -82,6 +83,10 @@ def main() -> int:
     parser.add_argument('pr_url')
     args = parser.parse_args()
 
+    with open('.github-auth.json') as f:
+        creds = json.load(f)
+    headers = {'Authorization': f'token {creds["token"]}'}
+
     match = PATTERN.match(args.pr_url)
     if not match:
         parser.error(f'expected pr_url to match {PATTERN.pattern}')
@@ -90,10 +95,12 @@ def main() -> int:
     pr = int(match[2])
 
     base = 'https://api.github.com'
-    pr_data = _req(f'{base}/repos/{repo}/pulls/{pr}')
+    pr_data = _req(f'{base}/repos/{repo}/pulls/{pr}', headers=headers)
     sha = pr_data['head']['sha']
-    statuses_data = _req(f'{base}/repos/{repo}/statuses/{sha}')
-    checks_data = _req(f'{base}/repos/{repo}/commits/{sha}/check-runs')
+    statuses_url = f'{base}/repos/{repo}/statuses/{sha}'
+    statuses_data = _req(statuses_url, headers=headers)
+    checks_url = f'{base}/repos/{repo}/commits/{sha}/check-runs'
+    checks_data = _req(checks_url, headers=headers)
 
     start_time = _parse_dt(pr_data['created_at'])
     statuses_by_context = collections.defaultdict(list)
