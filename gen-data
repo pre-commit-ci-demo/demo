@@ -5,7 +5,6 @@ import argparse
 import collections
 import datetime
 import json
-import pprint
 import subprocess
 import sys
 import tempfile
@@ -118,6 +117,8 @@ def make_pr(headers: Dict[str, str]) -> Tuple[int, str]:
 
 
 def poll_for_results(pr: int, headers: Dict[str, str]) -> None:
+    timeout = time.time() + 10 * 60
+
     base = 'https://api.github.com'
     pr_data = _req(f'{base}/repos/{REPO}/pulls/{pr}', headers=headers)
     sha = pr_data['head']['sha']
@@ -131,6 +132,9 @@ def poll_for_results(pr: int, headers: Dict[str, str]) -> None:
         if len(done) >= CHECKS_COUNT:
             print(f'found {len(done)} checks!')
             break
+        elif time.time() >= timeout:
+            print('=> timeout')
+            return
         else:
             print(f'=> waiting ({len(done)} completed)...')
             time.sleep(5)
@@ -144,6 +148,9 @@ def poll_for_results(pr: int, headers: Dict[str, str]) -> None:
         if state == 'success' and count == STATUSES_COUNT:
             print(f'found {statuses_data["total_count"]} statuses!')
             break
+        elif time.time() >= timeout:
+            print('=> timeout')
+            return
         else:
             print(f'=> waiting ({state}: {count} reported)...')
             time.sleep(5)
@@ -202,14 +209,22 @@ def main() -> int:
         creds = json.load(f)
     headers = {'Authorization': f'token {creds["token"]}'}
 
-    pr, branch = make_pr(headers)
-    try:
-        poll_for_results(pr, headers)
-        results = get_data(pr, headers)
-    finally:
-        delete_branch(branch, headers)
+    rows = []
+    for _ in range(5):
+        pr, branch = make_pr(headers)
+        try:
+            poll_for_results(pr, headers)
+            results = get_data(pr, headers)
+        finally:
+            delete_branch(branch, headers)
+        time.sleep(1)
 
-    pprint.pprint(results)
+        for result in results:
+            rows.append((pr, *result))
+
+    print('pr\tservice\tstart_time\trun_duration')
+    for pr, service, start_time, end_time in rows:
+        print(f'{pr}\t{service}\t{start_time}\t{end_time - start_time}')
 
     return 0
 
