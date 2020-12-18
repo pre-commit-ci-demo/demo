@@ -11,7 +11,9 @@ demo
 
 comparing pre-commit.ci against a bunch of other ci providers
 
-### results (2020-12-15)
+### results
+
+_last tabulated on 2020-12-15_
 
 runs are averaged over 5 pull requests.  timing starts on PR creation.
 
