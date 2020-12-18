@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+import argparse
+import collections
+import math
+import statistics
+
+RECT = {
+    'circleci': '#161616',
+    'github': '#000',
+}
+
+# https://stackoverflow.com/a/14500054/812183
+DEFS = '''\
+<defs>
+    <pattern
+        id="diagonalHatch1"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#000" stroke-width="1.5" class="wat"
+        />
+    </pattern>
+    <pattern
+        id="diagonalHatch2"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#fab040" stroke-width="1" class="wat"
+        />
+    </pattern>
+</defs>
+'''
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('tsv')
+    args = parser.parse_args()
+
+    wait_time = collections.defaultdict(list)
+    total_time = collections.defaultdict(list)
+
+    with open(args.tsv) as f:
+        next(f)  # discard headers
+
+        for line in f:
+            _, svc, wait_s, run_s = line.strip().split('\t')
+            wait, run = int(wait_s), int(run_s)
+            wait_time[svc].append(wait)
+            total_time[svc].append(wait + run)
+
+    # XXX: do something about this
+    del total_time['gitlab']
+
+    mean_total = sorted(
+        (statistics.mean(times), svc)
+        for svc, times in total_time.items()
+    )
+    mean_wait = {
+        svc: statistics.mean(times)
+        for svc, times in wait_time.items()
+    }
+
+    end = math.ceil(max(t for t, _ in mean_total) / 30) * 30
+
+    y_start = 24
+    v_line_x = 60
+    v_line_end = y_start + 42 * len(mean_total)
+    h_line_end = 480
+    scale_factor = (h_line_end - v_line_x) / end
+    line_color = '#ccc'
+    line_style = (
+        f'stroke="{line_color}" '
+        f'stroke-width="2" '
+        f'stroke-linecap="round"'
+    )
+
+    print(f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="{v_line_end + 84}" style="background: #353540">')  # noqa: E501
+    print(DEFS)
+
+    y = y_start
+    for total, svc in mean_total:
+        with open(f'img/{svc}.svg') as f:
+            img = f.read()
+        if svc in RECT:
+            print(
+                f'<rect '
+                f'    width="32" height="32" '
+                f'    x="12" y="{y}" '
+                f'    rx="4" '
+                f'    fill="{RECT[svc]}" '
+                f'/>',
+            )
+            img = img.replace('<svg', '<svg height="24" width="24"')
+            img = img.replace('<svg', f'<svg x="16" y="{y + 4}"')
+        else:
+            img = img.replace('<svg', '<svg height="32" width="32"')
+            img = img.replace('<svg', f'<svg x="12" y="{y}"')
+
+        print(f'<g>{img}</g>')
+        print(
+            f'<line '
+            f'    y1="{y + 16}" '
+            f'    y2="{y + 16}" '
+            f'    x1="{v_line_x - 4}" '
+            f'    x2="{v_line_x}" '
+            f'    {line_style} '
+            f'/>',
+        )
+
+        if svc == 'precommitci':
+            fill = '#fab040'
+            pattern = 'diagonalHatch1'
+        else:
+            fill = '#000'
+            pattern = 'diagonalHatch2'
+        print(
+            f'<rect '
+            f'    width="{total * scale_factor}" height="16" '
+            f'    x="{v_line_x}" y="{y + 8}" '
+            f'    rx="2" '
+            f'    fill="{fill}" '
+            f'    stroke="#000" '
+            f'/>',
+        )
+        print(
+            f'<rect '
+            f'    width="{mean_wait[svc] * scale_factor}" height="16" '
+            f'    x="{v_line_x}" y="{y + 8}" '
+            f'    class="shade" '
+            f'    fill="url(#{pattern})" '
+            f'    stroke="#000" '
+            f'/>',
+        )
+
+        y += 42
+
+    print(
+        f'<line'
+        f'    y1="{y_start}" y2="{v_line_end}"'
+        f'    x1="{v_line_x}" x2="{v_line_x}"'
+        f'    {line_style}'
+        f'/>',
+    )
+    print(
+        f'<line'
+        f'    y1="{v_line_end}" y2="{v_line_end}"'
+        f'    x1="{v_line_x}" x2="{h_line_end}"'
+        f'    {line_style}'
+        f'/>',
+    )
+
+    for i in range(0, end + 1, 30):
+        tick_x = v_line_x + i * scale_factor
+        if i % 60 == 0:
+            tick_height = 4
+            print(
+                f'<text'
+                f'    x="{tick_x}" y="{v_line_end + 20}"'
+                f'    text-anchor="middle"'
+                f'    fill="{line_color}"'
+                f'    font-family="sans-serif"'
+                f'    font-size="12px"'
+                f'>{i}</text>',
+            )
+        else:
+            tick_height = 2
+        print(
+            f'<line'
+            f'    y1="{v_line_end}" y2="{v_line_end + tick_height}"'
+            f'    x1="{tick_x}" x2="{tick_x}"'
+            f'    {line_style}'
+            f'/>',
+        )
+
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="16" y="{v_line_end + 32}"'
+        f'    fill="#fab040"'
+        f'    stroke="#000"'
+        f'/>',
+    )
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="16" y="{v_line_end + 32}"'
+        f'    fill="url(#diagonalHatch1)"'
+        f'/>',
+    )
+
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="16" y="{v_line_end + 52}"'
+        f'    fill="#fab040"'
+        f'    stroke="#000"'
+        f'/>',
+    )
+    print(
+        f'<polygon'
+        f'    points="'
+        f'      {16 + 12},{v_line_end + 52}'
+        f'      16,{v_line_end + 52 + 12}'
+        f'      {16+12},{v_line_end + 52 + 12}'
+        f'    "'
+        f'    fill="#000"'
+        f'/>',
+    )
+
+    print('</svg>')
+
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())

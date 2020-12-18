@@ -1,36 +1,36 @@
 pr	service	start_time	run_duration
-15	pre-commit.ci	1	9
-15	github actions	14	24
-15	circle ci	1	38
+15	precommitci	1	9
+15	github	14	24
+15	circleci	1	38
 15	appveyor	5	40
-15	azure pipelines	14	50
-15	travis-ci	21	51
+15	azurepipelines	14	50
+15	travisci	21	51
 15	gitlab	9	68
-16	pre-commit.ci	2	9
-16	circle ci	2	21
-16	github actions	13	23
+16	precommitci	2	9
+16	circleci	2	21
+16	github	13	23
 16	appveyor	16	36
-16	azure pipelines	13	42
-16	travis-ci	33	52
+16	azurepipelines	13	42
+16	travisci	33	52
 16	gitlab	228	74
-17	pre-commit.ci	2	8
-17	github actions	13	24
-17	circle ci	2	36
+17	precommitci	2	8
+17	github	13	24
+17	circleci	2	36
 17	appveyor	5	36
-17	azure pipelines	14	50
-17	travis-ci	25	51
+17	azurepipelines	14	50
+17	travisci	25	51
 17	gitlab	216	63
-18	pre-commit.ci	2	9
-18	circle ci	2	25
+18	precommitci	2	9
+18	circleci	2	25
 18	appveyor	5	39
-18	azure pipelines	14	52
-18	github actions	45	35
-18	travis-ci	35	49
+18	azurepipelines	14	52
+18	github	45	35
+18	travisci	35	49
 18	gitlab	229	66
-19	pre-commit.ci	1	9
-19	circle ci	1	31
-19	github actions	12	23
+19	precommitci	1	9
+19	circleci	1	31
+19	github	12	23
 19	appveyor	4	35
-19	azure pipelines	13	43
-19	travis-ci	39	61
+19	azurepipelines	13	43
+19	travisci	39	61
 19	gitlab	225	63
