@@ -10,3 +10,15 @@ demo
 ====
 
 comparing pre-commit.ci against a bunch of other ci providers
+
+### results (2020-12-15)
+
+runs are averaged over 5 pull requests.  timing starts on PR creation.
+
+![chart comparing seconds to complete](./img/2020-12-15_noop.svg)
+
+note: gitlab took much longer to complete so it is on a separate graph:
+
+![chart comparing seconds to complete w/ gitlab](./img/2020-12-15_noop-gitlab.svg)
+
+the raw data is available [here](./data/2020-12-15_noop.tsv)
