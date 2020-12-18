@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="500" height="192" style="background: #353540">
+<defs>
+    <pattern
+        id="diagonalHatch1"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#000" stroke-width="1.5"
+        />
+    </pattern>
+    <pattern
+        id="diagonalHatch2"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#fab040" stroke-width="1"
+        />
+    </pattern>
+</defs>
+<style>
+svg > text {
+    fill: #ccc;
+    font-family: sans-serif;
+}
+.small-text {
+    font-size: 12px;
+}
+.text-middle {
+    text-anchor: middle;
+}
+svg > line {
+    stroke: #ccc;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+</style>
+
+<g><svg x="12" y="24" height="32" width="32" xmlns="http://www.w3.org/2000/svg" viewBox="100 100 1800 1800"><defs><clipPath id="a" clipPathUnits="userSpaceOnUse"><path d="M0 1500h1500V0H0z"/></clipPath></defs><g clip-path="url(#a)" transform="matrix(1.33333 0 0 -1.33333 0 2000)"><path d="M665.147 130.852L130.853 665.147c-46.863 46.862-46.863 122.842 0 169.705l534.294 534.295c46.863 46.864 122.843 46.864 169.706 0l534.294-534.294c46.863-46.863 46.863-122.843 0-169.706L834.853 130.852c-46.863-46.862-122.843-46.862-169.706 0" fill="#fab040"/><path d="M687.774 233.226L233.225 687.775c-34.366 34.366-34.366 90.085 0 124.45l454.55 454.55c34.365 34.366 90.084 34.366 124.45 0l454.55-454.55c34.365-34.365 34.365-90.084 0-124.45l-454.55-454.55c-34.366-34.365-90.085-34.365-124.45 0z" fill="none" stroke="#040521" stroke-width="34" stroke-miterlimit="10"/><path d="M784.672 763.286c12.096 0 23.74.893 34.943 2.688 11.194 1.785 21.053 5.26 29.569 10.416 8.504 5.145 15.34 12.432 20.496 21.84 5.144 9.408 7.726 21.724 7.726 36.96 0 15.225-2.582 27.552-7.726 36.96-5.156 9.408-11.992 16.684-20.496 21.84-8.516 5.145-18.375 8.62-29.57 10.416-11.202 1.785-22.846 2.688-34.942 2.688h-81.985V763.286zm28.895 225.792c30.009 0 55.544-4.368 76.609-13.104 21.05-8.736 38.187-20.275 51.406-34.608 13.209-14.343 22.85-30.692 28.897-49.056 6.048-18.375 9.072-37.412 9.072-57.12 0-19.268-3.024-38.2-9.072-56.784-6.047-18.596-15.688-35.06-28.897-49.392-13.22-14.343-30.355-25.872-51.406-34.608-21.065-8.736-46.6-13.104-76.61-13.104h-110.88V509.27H597.184v479.808z"/></g></svg>
+</g>
+<line    y1="40" x1="56"    y2="40" x2="60"/>
+<rect    width="16.177777777777777" height="16"    x="60" y="32"    rx="2"    fill="#fab040"    stroke="#000"/>
+<rect    width="2.488888888888889" height="16"    x="60" y="32"    fill="url(#diagonalHatch1)"/>
+<g><svg x="12" y="66" height="32" width="32" viewBox="0 0 210 194" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Fill-1-+-Group-24">
+            <g id="Group-24">
+                <g id="Group">
+                    <path d="M105.0614,193.655 L105.0614,193.655 L143.7014,74.734 L66.4214,74.734 L105.0614,193.655 L105.0614,193.655 Z" id="Fill-4" fill="#E24329"></path>
+                    <path id="Fill-6" fill="#FC6D26"></path>
+                    <path d="M105.0614,193.6548 L66.4214,74.7338 L12.2684,74.7338 L105.0614,193.6548 Z" id="Fill-8" fill="#FC6D26"></path>
+                    <path id="Fill-10" fill="#FC6D26"></path>
+                    <path d="M12.2685,74.7341 L12.2685,74.7341 L0.5265,110.8731 C-0.5445,114.1691 0.6285,117.7801 3.4325,119.8171 L105.0615,193.6551 L12.2685,74.7341 Z" id="Fill-12" fill="#FCA326"></path>
+                    <path id="Fill-14" fill="#FC6D26"></path>
+                    <path d="M12.2685,74.7342 L66.4215,74.7342 L43.1485,3.1092 C41.9515,-0.5768 36.7375,-0.5758 35.5405,3.1092 L12.2685,74.7342 Z" id="Fill-16" fill="#E24329"></path>
+                    <path d="M105.0614,193.6548 L143.7014,74.7338 L197.8544,74.7338 L105.0614,193.6548 Z" id="Fill-18" fill="#FC6D26"></path>
+                    <path d="M197.8544,74.7341 L197.8544,74.7341 L209.5964,110.8731 C210.6674,114.1691 209.4944,117.7801 206.6904,119.8171 L105.0614,193.6551 L197.8544,74.7341 Z" id="Fill-20" fill="#FCA326"></path>
+                    <path d="M197.8544,74.7342 L143.7014,74.7342 L166.9744,3.1092 C168.1714,-0.5768 173.3854,-0.5758 174.5824,3.1092 L197.8544,74.7342 Z" id="Fill-22" fill="#E24329"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
+</g>
+<line    y1="82" x1="56"    y2="82" x2="60"/>
+<rect    width="386.0888888888889" height="16"    x="60" y="74"    rx="2"    fill="#000"    stroke="#000"/>
+<rect    width="282.1777777777778" height="16"    x="60" y="74"    fill="url(#diagonalHatch2)"/>
+<line    x1="60" y1="24"    x2="60" y2="108"/>
+<line    x1="60" y1="108"    x2="480" y2="108"/>
+<text    x="60.0" y="128"    class="small-text text-middle">0</text>
+<line    x1="60.0" y1="108"    x2="60.0" y2="114"/>
+<line    x1="83.33333333333333" y1="108"    x2="83.33333333333333" y2="110"/>
+<line    x1="106.66666666666666" y1="108"    x2="106.66666666666666" y2="112"/>
+<line    x1="130.0" y1="108"    x2="130.0" y2="110"/>
+<text    x="153.33333333333331" y="128"    class="small-text text-middle">60</text>
+<line    x1="153.33333333333331" y1="108"    x2="153.33333333333331" y2="114"/>
+<line    x1="176.66666666666669" y1="108"    x2="176.66666666666669" y2="110"/>
+<line    x1="200.0" y1="108"    x2="200.0" y2="112"/>
+<line    x1="223.33333333333334" y1="108"    x2="223.33333333333334" y2="110"/>
+<text    x="246.66666666666666" y="128"    class="small-text text-middle">120</text>
+<line    x1="246.66666666666666" y1="108"    x2="246.66666666666666" y2="114"/>
+<line    x1="270.0" y1="108"    x2="270.0" y2="110"/>
+<line    x1="293.33333333333337" y1="108"    x2="293.33333333333337" y2="112"/>
+<line    x1="316.6666666666667" y1="108"    x2="316.6666666666667" y2="110"/>
+<text    x="340.0" y="128"    class="small-text text-middle">180</text>
+<line    x1="340.0" y1="108"    x2="340.0" y2="114"/>
+<line    x1="363.3333333333333" y1="108"    x2="363.3333333333333" y2="110"/>
+<line    x1="386.6666666666667" y1="108"    x2="386.6666666666667" y2="112"/>
+<line    x1="410.0" y1="108"    x2="410.0" y2="110"/>
+<text    x="433.3333333333333" y="128"    class="small-text text-middle">240</text>
+<line    x1="433.3333333333333" y1="108"    x2="433.3333333333333" y2="114"/>
+<line    x1="456.6666666666667" y1="108"    x2="456.6666666666667" y2="110"/>
+<line    x1="480.0" y1="108"    x2="480.0" y2="112"/>
+<rect    width="12" height="12"    x="404" y="24"    fill="#fab040"    stroke="#000"/>
+<rect    width="12" height="12"    x="404" y="24"    fill="url(#diagonalHatch1)"/>
+<text    x="420" y="34"    class="small-text">wait time</text>
+<rect    width="12" height="12"    x="404" y="44"    fill="#fab040"    stroke="#000"/>
+<polygon    points="      416,44      404,56      416,56    "    fill="#000"/>
+<text    x="420" y="54"    class="small-text">run time</text>
+<text    x="250" y="152"    font-weight="bold"    class="text-middle">seconds to complete</text>
+<text    x="250" y="172"    font-style="italic"    class="small-text text-middle">(smaller is better)</text>
+</svg>

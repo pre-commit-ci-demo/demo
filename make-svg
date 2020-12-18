@@ -1,0 +1,253 @@
+#!/usr/bin/env python3
+import argparse
+import collections
+import math
+import statistics
+
+RECT = {
+    'circleci': '#161616',
+    'github': '#000',
+}
+
+
+# https://stackoverflow.com/a/14500054/812183
+DEFS = '''\
+<defs>
+    <pattern
+        id="diagonalHatch1"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#000" stroke-width="1.5"
+        />
+    </pattern>
+    <pattern
+        id="diagonalHatch2"
+        patternUnits="userSpaceOnUse"
+        width="4" height="4"
+    >
+        <path
+            d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+            stroke="#fab040" stroke-width="1"
+        />
+    </pattern>
+</defs>
+<style>
+svg > text {
+    fill: #ccc;
+    font-family: sans-serif;
+}
+.small-text {
+    font-size: 12px;
+}
+.text-middle {
+    text-anchor: middle;
+}
+svg > line {
+    stroke: #ccc;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+</style>
+'''
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('tsv')
+    parser.add_argument('--gitlab', action='store_true')
+    args = parser.parse_args()
+
+    wait_time = collections.defaultdict(list)
+    total_time = collections.defaultdict(list)
+
+    with open(args.tsv) as f:
+        next(f)  # discard headers
+
+        for line in f:
+            _, svc, wait_s, run_s = line.strip().split('\t')
+            wait, run = int(wait_s), int(run_s)
+            wait_time[svc].append(wait)
+            total_time[svc].append(wait + run)
+
+    mean_total = sorted(
+        (statistics.mean(times), svc)
+        for svc, times in total_time.items()
+        if args.gitlab or svc not in {'gitlab'}
+        if not args.gitlab or svc in {'precommitci', 'gitlab'}
+    )
+    mean_wait = {
+        svc: statistics.mean(times)
+        for svc, times in wait_time.items()
+    }
+
+    end = math.ceil(max(t for t, _ in mean_total) / 30) * 30
+
+    width = 500
+    y_start = 24
+    v_line_x = 60
+    v_line_end = y_start + 42 * len(mean_total)
+    h_line_end = 480
+    scale_factor = (h_line_end - v_line_x) / end
+
+    print(f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{width}" height="{v_line_end + 84}" style="background: #353540">')  # noqa: E501
+    print(DEFS)
+
+    y = y_start
+    for total, svc in mean_total:
+        with open(f'icons/{svc}.svg') as f:
+            img = f.read()
+        if svc in RECT:
+            print(
+                f'<rect'
+                f'    width="32" height="32"'
+                f'    x="12" y="{y}"'
+                f'    rx="4"'
+                f'    fill="{RECT[svc]}"'
+                f'/>',
+            )
+            img = img.replace('<svg', '<svg height="24" width="24"')
+            img = img.replace('<svg', f'<svg x="16" y="{y + 4}"')
+        else:
+            img = img.replace('<svg', '<svg height="32" width="32"')
+            img = img.replace('<svg', f'<svg x="12" y="{y}"')
+
+        print(f'<g>{img}</g>')
+        print(
+            f'<line'
+            f'    y1="{y + 16}" x1="{v_line_x - 4}"'
+            f'    y2="{y + 16}" x2="{v_line_x}"'
+            f'/>',
+        )
+
+        if svc == 'precommitci':
+            fill = '#fab040'
+            pattern = 'diagonalHatch1'
+        else:
+            fill = '#000'
+            pattern = 'diagonalHatch2'
+        print(
+            f'<rect'
+            f'    width="{total * scale_factor}" height="16"'
+            f'    x="{v_line_x}" y="{y + 8}"'
+            f'    rx="2"'
+            f'    fill="{fill}"'
+            f'    stroke="#000"'
+            f'/>',
+        )
+        print(
+            f'<rect'
+            f'    width="{mean_wait[svc] * scale_factor}" height="16"'
+            f'    x="{v_line_x}" y="{y + 8}"'
+            f'    fill="url(#{pattern})"'
+            f'/>',
+        )
+
+        y += 42
+
+    print(
+        f'<line'
+        f'    x1="{v_line_x}" y1="{y_start}"'
+        f'    x2="{v_line_x}" y2="{v_line_end}"'
+        f'/>',
+    )
+    print(
+        f'<line'
+        f'    x1="{v_line_x}" y1="{v_line_end}"'
+        f'    x2="{h_line_end}" y2="{v_line_end}"'
+        f'/>',
+    )
+
+    for i in range(0, end + 1, 15):
+        tick_x = v_line_x + i * scale_factor
+        if i % 60 == 0:
+            tick_height = 6
+            print(
+                f'<text'
+                f'    x="{tick_x}" y="{v_line_end + 20}"'
+                f'    class="small-text text-middle"'
+                f'>{i}</text>',
+            )
+        elif i % 30 == 0:
+            tick_height = 4
+        else:
+            tick_height = 2
+        print(
+            f'<line'
+            f'    x1="{tick_x}" y1="{v_line_end}"'
+            f'    x2="{tick_x}" y2="{v_line_end + tick_height}"'
+            f'/>',
+        )
+
+    legend_px = 96
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="{width - legend_px}" y="{y_start}"'
+        f'    fill="#fab040"'
+        f'    stroke="#000"'
+        f'/>',
+    )
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="{width - legend_px}" y="{y_start}"'
+        f'    fill="url(#diagonalHatch1)"'
+        f'/>',
+    )
+    print(
+        f'<text'
+        f'    x="{width - legend_px + 16}" y="{y_start + 10}"'
+        f'    class="small-text"'
+        f'>wait time</text>',
+    )
+
+    print(
+        f'<rect'
+        f'    width="12" height="12"'
+        f'    x="{width - legend_px}" y="{y_start + 20}"'
+        f'    fill="#fab040"'
+        f'    stroke="#000"'
+        f'/>',
+    )
+    print(
+        f'<polygon'
+        f'    points="'
+        f'      {width - legend_px + 12},{y_start + 20}'
+        f'      {width - legend_px},{y_start + 20 + 12}'
+        f'      {width - legend_px + 12},{y_start + 20 + 12}'
+        f'    "'
+        f'    fill="#000"'
+        f'/>',
+    )
+    print(
+        f'<text'
+        f'    x="{width - legend_px + 16}" y="{y_start + 20 + 10}"'
+        f'    class="small-text"'
+        f'>run time</text>',
+    )
+
+    print(
+        f'<text'
+        f'    x="{width // 2}" y="{v_line_end + 44}"'
+        f'    font-weight="bold"'
+        f'    class="text-middle"'
+        f'>seconds to complete</text>',
+    )
+    print(
+        f'<text'
+        f'    x="{width // 2}" y="{v_line_end + 64}"'
+        f'    font-style="italic"'
+        f'    class="small-text text-middle"'
+        f'>(smaller is better)</text>',
+    )
+
+    print('</svg>')
+
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())

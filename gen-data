@@ -74,14 +74,14 @@ class Run(NamedTuple):
 
 SERVICES = {
     # checks
-    'Travis CI - Pull Request': 'travis-ci',
-    'pre-commit': 'github actions',
+    'Travis CI - Pull Request': 'travisci',
+    'pre-commit': 'github',
     # statuses
     'ci/gitlab/gitlab.com': 'gitlab',
-    'ci/circleci: build': 'circle ci',
+    'ci/circleci: build': 'circleci',
     'continuous-integration/appveyor/pr': 'appveyor',
-    'pre-commit-ci-demo.demo': 'azure pipelines',
-    'pre-commit.ci - pr': 'pre-commit.ci',
+    'pre-commit-ci-demo.demo': 'azurepipelines',
+    'pre-commit.ci - pr': 'precommitci',
 }
 CHECKS_COUNT = 2
 STATUSES_COUNT = len(SERVICES) - CHECKS_COUNT
