@@ -37,7 +37,7 @@ class Status(NamedTuple):
     state: str
 
     @classmethod
-    def make(cls, dct: Dict[str, Any]) -> Status:
+    def make(cls, dct: dict[str, Any]) -> Status:
         return cls(
             created_at=_parse_dt(dct['created_at']),
             context=dct['context'],
@@ -55,7 +55,7 @@ class Check(NamedTuple):
     conclusion: str
 
     @classmethod
-    def make(cls, dct: Dict[str, Any]) -> Check:
+    def make(cls, dct: dict[str, Any]) -> Check:
         return cls(
             started_at=_parse_dt(dct['started_at']),
             completed_at=_parse_dt(dct['completed_at']),
@@ -87,7 +87,7 @@ CHECKS_COUNT = 2
 STATUSES_COUNT = len(SERVICES) - CHECKS_COUNT
 
 
-def make_pr(headers: Dict[str, str]) -> Tuple[int, str]:
+def make_pr(headers: dict[str, str]) -> tuple[int, str]:
     with tempfile.TemporaryDirectory() as tmpdir:
         def _git(*cmd: str) -> None:
             subprocess.check_call(('git', '-C', tmpdir, *cmd))
@@ -116,7 +116,7 @@ def make_pr(headers: Dict[str, str]) -> Tuple[int, str]:
     return resp['number'], branch
 
 
-def poll_for_results(pr: int, headers: Dict[str, str]) -> None:
+def poll_for_results(pr: int, headers: dict[str, str]) -> None:
     timeout = time.time() + 10 * 60
 
     base = 'https://api.github.com'
@@ -156,7 +156,7 @@ def poll_for_results(pr: int, headers: Dict[str, str]) -> None:
             time.sleep(5)
 
 
-def get_data(pr: int, headers: Dict[str, str]) -> List[Run]:
+def get_data(pr: int, headers: dict[str, str]) -> list[Run]:
     base = 'https://api.github.com'
     pr_data = _req(f'{base}/repos/{REPO}/pulls/{pr}', headers=headers)
     sha = pr_data['head']['sha']
@@ -195,7 +195,7 @@ def get_data(pr: int, headers: Dict[str, str]) -> List[Run]:
     return runs
 
 
-def delete_branch(branch: str, headers: Dict[str, str]) -> None:
+def delete_branch(branch: str, headers: dict[str, str]) -> None:
     url = f'https://api.github.com/repos/{REPO}/git/refs/heads/{branch}'
     request = urllib.request.Request(url, headers=headers, method='DELETE')
     urllib.request.urlopen(request).read()
