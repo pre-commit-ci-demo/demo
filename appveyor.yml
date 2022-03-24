@@ -1,6 +1,6 @@
 build: false
 branches:
-  only: [master]
+  only: [main]
 cache:
 - '%LOCALAPPDATA%\pip\cache'
 - '%USERPROFILE%\.cache\pre-commit'
