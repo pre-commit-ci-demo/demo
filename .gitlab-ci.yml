@@ -1,6 +1,6 @@
 image: python:3.8-buster
 pre-commit:
-  only: [master, external_pull_requests]
+  only: [main, external_pull_requests]
   variables:
     PIP_CACHE_DIR: ${CI_PROJECT_DIR}/.cache/pip
     PRE_COMMIT_HOME: ${CI_PROJECT_DIR}/.cache/pre-commit
