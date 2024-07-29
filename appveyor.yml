@@ -5,6 +5,6 @@ cache:
 - '%LOCALAPPDATA%\pip\cache'
 - '%USERPROFILE%\.cache\pre-commit'
 install:
-- SET PATH=C:\Python38;C:\Python38\Scripts;%PATH%
+- SET PATH=C:\Python312;C:\Python312\Scripts;%PATH%
 - pip install pre-commit
 test_script: pre-commit run --all-files
