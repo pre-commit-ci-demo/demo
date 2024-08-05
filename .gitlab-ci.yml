@@ -1,4 +1,4 @@
-image: python:3.12-buster
+image: python:3.12-bullseye
 pre-commit:
   only: [main, external_pull_requests]
   variables:
