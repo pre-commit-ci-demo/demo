@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: python:3.12-bullseye
+      - image: python:3.12-trixie
     steps:
       - checkout
       - run:
